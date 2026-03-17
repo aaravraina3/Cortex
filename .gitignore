@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+*.log
+npm-debug.log*
+.npm
+.eslintcache
+
+# Environment
+.env
+.env.local
+
+# Docker
+docker-compose.override.yml
+
+# Supabase
+.env.supabase.local
+kong.yml

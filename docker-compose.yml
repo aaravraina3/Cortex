@@ -1,0 +1,43 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ${DOCKERFILE}
+    container_name: cortex-backend
+    ports:
+      - "8000:8000"
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      SUPABASE_URL: ${BACKEND_SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${BACKEND_SUPABASE_SERVICE_ROLE_KEY}
+      WEBHOOK_BASE_URL: ${WEBHOOK_BASE_URL}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      DATABASE_URL: ${DB_URL}
+    volumes:
+      - ./backend:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ${DOCKERFILE}
+    container_name: cortex-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_ENVIRONMENT: ${ENVIRONMENT}
+      VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+networks:
+  default:
+    name: cortex-network
+    external: true
