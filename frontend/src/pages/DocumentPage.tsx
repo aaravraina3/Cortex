@@ -240,11 +240,22 @@ export function DocumentPage() {
                 <h3 className="text-lg font-medium text-slate-300 mb-2">
                   No documents yet
                 </h3>
-                <p className="text-slate-400">
+                <p className="text-slate-400 mb-4">
                   {isTenant
                     ? 'Upload files to get started with data processing'
                     : 'No files uploaded for this tenant'}
                 </p>
+                {isTenant && (
+                  <div className="bg-slate-700/50 border border-slate-600 rounded-lg p-4 max-w-md mx-auto text-left">
+                    <p className="text-xs font-medium text-slate-300 mb-2">Sample documents available in the repo:</p>
+                    <ul className="text-xs text-slate-400 space-y-1">
+                      <li><span className="text-slate-300">samples/mock-data/</span> — POs, RFQs, product specs, CSVs</li>
+                      <li><span className="text-slate-300">samples/kuka/</span> — KUKA robot brochures</li>
+                      <li><span className="text-slate-300">samples/milara/</span> — Milara robot spec sheets</li>
+                    </ul>
+                    <p className="text-xs text-slate-500 mt-2">Click "Upload Files" and select from these directories.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

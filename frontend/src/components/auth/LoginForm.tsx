@@ -56,6 +56,27 @@ export function LoginForm() {
             <p className="text-slate-400">Enter your credentials to continue</p>
           </div>
 
+          <div className="bg-slate-700/50 border border-slate-600 rounded-lg p-3">
+            <p className="text-xs text-slate-400 mb-2 font-medium">Demo Credentials</p>
+            <div className="space-y-1">
+              {[
+                { email: 'admin@cortex.com', label: 'Admin' },
+                { email: 'eng@kuka.com', label: 'KUKA' },
+                { email: 'eng@milara.com', label: 'Milara' },
+              ].map(({ email, label }) => (
+                <button
+                  key={email}
+                  type="button"
+                  onClick={() => setFormData({ email, password: 'password' })}
+                  className="w-full flex items-center justify-between px-3 py-1.5 text-xs rounded bg-slate-600/50 hover:bg-slate-600 transition-colors text-left"
+                >
+                  <span className="text-slate-300">{email}</span>
+                  <span className="text-slate-500">{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {error && (
               <div className="bg-red-900/50 border border-red-600 text-red-300 px-4 py-4 rounded-lg text-sm">
