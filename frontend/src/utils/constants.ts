@@ -51,6 +51,10 @@ export const QUERY_KEYS = {
       [...QUERY_KEYS.relationships.lists(), tenantId] as const,
   },
 
+  samples: {
+    forTenant: (tenantId: string | undefined) => ['samples', 'for-tenant', tenantId] as const,
+  },
+
   migrations: {
     all: () => ['migrations'] as const,
     lists: () => [...QUERY_KEYS.migrations.all(), 'list'] as const,
