@@ -56,24 +56,35 @@ export function LoginForm() {
             <p className="text-slate-400">Enter your credentials to continue</p>
           </div>
 
-          <div className="bg-slate-700/50 border border-slate-600 rounded-lg p-3">
-            <p className="text-xs text-slate-400 mb-2 font-medium">Demo Credentials</p>
-            <div className="space-y-1">
-              {[
-                { email: 'admin@cortex.com', label: 'Admin' },
-                { email: 'eng@kuka.com', label: 'KUKA' },
-                { email: 'eng@milara.com', label: 'Milara' },
-              ].map(({ email, label }) => (
-                <button
-                  key={email}
-                  type="button"
-                  onClick={() => setFormData({ email, password: 'password' })}
-                  className="w-full flex items-center justify-between px-3 py-1.5 text-xs rounded bg-slate-600/50 hover:bg-slate-600 transition-colors text-left"
-                >
-                  <span className="text-slate-300">{email}</span>
-                  <span className="text-slate-500">{label}</span>
-                </button>
-              ))}
+          <div className="bg-slate-700/50 border border-slate-600 rounded-lg p-3 space-y-3">
+            <div>
+              <p className="text-xs text-slate-300 font-medium mb-1.5">Quick Login</p>
+              <div className="space-y-1">
+                {[
+                  { email: 'admin@cortex.com', label: 'Admin', desc: 'Run pipeline & manage all tenants' },
+                  { email: 'eng@kuka.com', label: 'KUKA Tenant', desc: 'Upload docs & view extracted data' },
+                  { email: 'eng@milara.com', label: 'Milara Tenant', desc: 'Upload docs & view extracted data' },
+                ].map(({ email, label, desc }) => (
+                  <button
+                    key={email}
+                    type="button"
+                    onClick={() => {
+                      setFormData({ email, password: 'password' })
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 text-xs rounded bg-slate-600/50 hover:bg-slate-600 transition-colors text-left"
+                  >
+                    <div>
+                      <span className="text-slate-200 font-medium">{label}</span>
+                      <span className="text-slate-500 ml-2">{desc}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="border-t border-slate-600 pt-2">
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                <span className="text-slate-400 font-medium">Demo flow:</span> Log in as a tenant to upload sample documents (from <span className="font-mono text-slate-400">samples/</span> directory), then log in as admin to run the ETL pipeline.
+              </p>
             </div>
           </div>
 

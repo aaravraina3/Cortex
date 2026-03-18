@@ -14,6 +14,7 @@ import { useRealtimeSubscription } from '../hooks/useRealtimeSubscription'
 import { QUERY_KEYS } from '../utils/constants'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRetryExtract } from '../hooks/preprocess.hooks'
+import api from '../config/axios.config'
 
 export function DocumentPage() {
   const { user } = useAuth()
@@ -33,6 +34,21 @@ export function DocumentPage() {
 
   const isTenant = user?.role === 'tenant'
   const isAdmin = user?.role === 'admin'
+  const canUpload = isTenant || isAdmin
+  const [loadingSample, setLoadingSample] = useState<string | null>(null)
+
+  const handleLoadSample = async (dataset: string) => {
+    setLoadingSample(dataset)
+    try {
+      await api.post(`/samples/load/${dataset}`)
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.files.all() })
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.extractedFiles.all() })
+    } catch (err) {
+      console.error('Failed to load sample:', err)
+    } finally {
+      setLoadingSample(null)
+    }
+  }
 
   const handleExtractedFilesChange = useCallback(() => {
     queryClient.invalidateQueries({
@@ -143,7 +159,7 @@ export function DocumentPage() {
         {/* Header */}
         <div className="flex-shrink-0 flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-slate-100">Documents</h1>
-          {isTenant && (
+          {canUpload && (
             <Button onClick={() => setIsUploadModalOpen(true)}>
               Upload Files
             </Button>
@@ -208,7 +224,7 @@ export function DocumentPage() {
                       >
                         View
                       </Button>
-                      {isTenant && (
+                      {canUpload && (
                         <Button
                           variant="danger"
                           size="sm"
@@ -240,28 +256,56 @@ export function DocumentPage() {
                 <h3 className="text-lg font-medium text-slate-300 mb-2">
                   No documents yet
                 </h3>
-                <p className="text-slate-400 mb-4">
-                  {isTenant
-                    ? 'Upload files to get started with data processing'
-                    : 'No files uploaded for this tenant'}
-                </p>
-                {isTenant && (
-                  <div className="bg-slate-700/50 border border-slate-600 rounded-lg p-4 max-w-md mx-auto text-left">
-                    <p className="text-xs font-medium text-slate-300 mb-2">Sample documents available in the repo:</p>
-                    <ul className="text-xs text-slate-400 space-y-1">
-                      <li><span className="text-slate-300">samples/mock-data/</span> — POs, RFQs, product specs, CSVs</li>
-                      <li><span className="text-slate-300">samples/kuka/</span> — KUKA robot brochures</li>
-                      <li><span className="text-slate-300">samples/milara/</span> — Milara robot spec sheets</li>
-                    </ul>
-                    <p className="text-xs text-slate-500 mt-2">Click "Upload Files" and select from these directories.</p>
+                <div className="space-y-5 max-w-lg mx-auto">
+                  <div className="space-y-2">
+                    <p className="text-sm text-slate-300 font-medium">Load sample documents with one click:</p>
+                    <div className="grid gap-2">
+                      {[
+                        { id: 'mock-data', label: 'Manufacturing CPQ', desc: 'POs, RFQs, product specs, CSVs (10 files)' },
+                        { id: 'kuka', label: 'KUKA Robotics', desc: 'Industrial robot brochures (9 files)' },
+                        { id: 'milara', label: 'Milara Robotics', desc: 'Semiconductor robot spec sheets (12 files)' },
+                      ].map(({ id, label, desc }) => (
+                        <button
+                          key={id}
+                          onClick={() => handleLoadSample(id)}
+                          disabled={loadingSample !== null}
+                          className="flex items-center justify-between w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 rounded-lg transition-colors text-left"
+                        >
+                          <div>
+                            <p className="text-sm font-medium text-slate-200">{label}</p>
+                            <p className="text-xs text-slate-400">{desc}</p>
+                          </div>
+                          {loadingSample === id ? (
+                            <svg className="animate-spin h-5 w-5 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                          ) : (
+                            <span className="text-xs text-primary-400 font-medium">Load →</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                )}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 border-t border-slate-700"></div>
+                    <span className="text-xs text-slate-500">or</span>
+                    <div className="flex-1 border-t border-slate-700"></div>
+                  </div>
+                  <Button
+                    onClick={() => setIsUploadModalOpen(true)}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    Upload Your Own Files
+                  </Button>
+                </div>
               </div>
             )}
           </div>
         </div>
         {/* Upload Modal */}
-        {isTenant && (
+        {canUpload && (
           <Modal
             isOpen={isUploadModalOpen}
             onClose={handleCloseUploadModal}
