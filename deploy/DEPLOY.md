@@ -55,7 +55,7 @@ The backend auto-seeds demo users and tenants on first startup.
 | `VITE_ENVIRONMENT` | `production` |
 | `VITE_SUPABASE_URL` | `https://xxx.supabase.co` |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | `eyJ...` (anon key from step 1) |
-| `VITE_API_BASE_URL` | `https://<railway-url>` (no trailing slash, no /api) |
+| `VITE_API_BASE_URL` | `https://<railway-url>/api` |
 
 5. Deploy. The frontend build hides the dev-only error tester page.
 
@@ -63,11 +63,9 @@ The backend auto-seeds demo users and tenants on first startup.
 
 1. Visit the Vercel URL and log in as **admin@cortex.com / password**
 2. Switch to a tenant (e.g. Kawasaki Robotics)
-3. On the Documents page, each tenant sees **only their own** sample Load button — click it to load
+3. On the Documents page, load sample datasets
 4. Go to Admin and run the full pipeline: Classify → Assign → Patterns → Migrations → Load Data
 5. Now visitors see a completed pipeline when they log in
-
-**If Staubli tenant is missing** (e.g. DB was seeded before Staubli was added), run `deploy/add-staubli-tenant.sql` in Supabase SQL Editor.
 
 ## Demo credentials
 
@@ -78,5 +76,3 @@ The backend auto-seeds demo users and tenants on first startup.
 | eng@kuka.com | password | Tenant (Kuka) |
 | eng@staubli.com | password | Tenant (Staubli) |
 | eng@milara.com | password | Tenant (Milara) |
-
-**Demo behavior:** Tenant users see only their tenant's documents. Admin can switch tenants to see each tenant's data. For a clean demo (e.g. Bridgwater), log in as a tenant user (e.g. eng@kuka.com) — they see only Kuka's docs.

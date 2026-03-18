@@ -56,18 +56,6 @@ async def get_dataset_for_tenant(tenant_name: str):
     }
 
 
-@router.get("/for-tenant-id/{tenant_id}")
-async def get_dataset_for_tenant_id(
-    tenant_id: UUID,
-    user=Depends(get_current_user),
-    supabase: AsyncClient = Depends(get_async_supabase),
-):
-    tenant_row = await supabase.table("tenants").select("name").eq("id", str(tenant_id)).single().execute()
-    if not tenant_row.data:
-        return None
-    return await get_dataset_for_tenant(tenant_row.data.get("name", ""))
-
-
 @router.post("/load/{dataset_name}")
 async def load_sample_dataset(
     dataset_name: str,
@@ -91,17 +79,6 @@ async def load_sample_dataset(
 
     if not effective_tenant_id:
         raise HTTPException(status_code=400, detail="No tenant_id — admin must pass ?tenant_id=")
-
-    tenant_row = await supabase.table("tenants").select("name").eq("id", effective_tenant_id).single().execute()
-    if not tenant_row.data:
-        raise HTTPException(status_code=404, detail="Tenant not found")
-    tenant_name = tenant_row.data.get("name")
-    allowed_dataset = TENANT_DATASET_MAP.get(tenant_name)
-    if allowed_dataset != dataset_name:
-        raise HTTPException(
-            status_code=403,
-            detail=f"Dataset '{dataset_name}' is not assigned to tenant '{tenant_name}'. Use '{allowed_dataset or 'N/A'}'."
-        )
 
     uploaded = []
     skipped = []
