@@ -15,15 +15,7 @@ SAMPLES_DIR = Path("/samples") if Path("/samples").exists() else Path(__file__).
 DATASETS = {
     "mock-data": "Manufacturing CPQ — POs, RFQs, product specs, CSVs",
     "kuka": "KUKA Robotics — industrial robot brochures",
-    "staubli": "Staubli — connectors, robots, and fluid systems",
     "milara": "Milara — semiconductor robot spec sheets",
-}
-
-TENANT_DATASET_MAP = {
-    "Kawasaki Robotics": "mock-data",
-    "Kuka AG": "kuka",
-    "Staubli": "staubli",
-    "Milara Incorporated": "milara",
 }
 
 
@@ -37,23 +29,6 @@ async def list_datasets():
         files = [f.name for f in dataset_path.iterdir() if f.is_file() and not f.name.startswith(".")]
         result.append({"name": name, "description": description, "files": files, "count": len(files)})
     return result
-
-
-@router.get("/for-tenant/{tenant_name}")
-async def get_dataset_for_tenant(tenant_name: str):
-    dataset_id = TENANT_DATASET_MAP.get(tenant_name)
-    if not dataset_id or dataset_id not in DATASETS:
-        return None
-    dataset_path = SAMPLES_DIR / dataset_id
-    if not dataset_path.exists():
-        return None
-    files = [f.name for f in dataset_path.iterdir() if f.is_file() and not f.name.startswith(".")]
-    return {
-        "name": dataset_id,
-        "description": DATASETS[dataset_id],
-        "files": files,
-        "count": len(files),
-    }
 
 
 @router.post("/load/{dataset_name}")

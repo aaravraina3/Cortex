@@ -37,14 +37,6 @@ export function DocumentPage() {
   const canUpload = isTenant || isAdmin
   const [loadingSample, setLoadingSample] = useState<string | null>(null)
 
-  const TENANT_SAMPLES: Record<string, { id: string; label: string; desc: string }> = {
-    'Kawasaki Robotics': { id: 'mock-data', label: 'Manufacturing CPQ', desc: 'POs, RFQs, product specs, CSVs (10 files)' },
-    'Kuka AG': { id: 'kuka', label: 'KUKA Robotics', desc: 'Industrial robot brochures (9 files)' },
-    'Staubli': { id: 'staubli', label: 'Staubli', desc: 'Connectors, robots, and fluid systems (10 files)' },
-    'Milara Incorporated': { id: 'milara', label: 'Milara Robotics', desc: 'Semiconductor robot spec sheets (12 files)' },
-  }
-  const tenantSample = currentTenant?.name ? TENANT_SAMPLES[currentTenant.name] : undefined
-
   const handleLoadSample = async (dataset: string) => {
     setLoadingSample(dataset)
     try {
@@ -279,47 +271,48 @@ export function DocumentPage() {
                   No documents yet
                 </h3>
                 <div className="space-y-5 max-w-lg mx-auto">
-                  {tenantSample && (
-                    <div className="space-y-2">
-                      <p className="text-sm text-slate-300 font-medium">Load sample documents for {currentTenant?.name}:</p>
-                      <button
-                        onClick={() => handleLoadSample(tenantSample.id)}
-                        disabled={loadingSample !== null}
-                        className="flex items-center justify-between w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 rounded-lg transition-colors text-left"
-                      >
-                        <div>
-                          <p className="text-sm font-medium text-slate-200">{tenantSample.label}</p>
-                          <p className="text-xs text-slate-400">{tenantSample.desc}</p>
-                        </div>
-                        {loadingSample === tenantSample.id ? (
-                          <svg className="animate-spin h-5 w-5 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                          </svg>
-                        ) : (
-                          <span className="text-xs text-primary-400 font-medium">Load →</span>
-                        )}
-                      </button>
+                  <div className="space-y-2">
+                    <p className="text-sm text-slate-300 font-medium">Load sample documents with one click:</p>
+                    <div className="grid gap-2">
+                      {[
+                        { id: 'mock-data', label: 'Manufacturing CPQ', desc: 'POs, RFQs, product specs, CSVs (10 files)' },
+                        { id: 'kuka', label: 'KUKA Robotics', desc: 'Industrial robot brochures (9 files)' },
+                        { id: 'milara', label: 'Milara Robotics', desc: 'Semiconductor robot spec sheets (12 files)' },
+                      ].map(({ id, label, desc }) => (
+                        <button
+                          key={id}
+                          onClick={() => handleLoadSample(id)}
+                          disabled={loadingSample !== null}
+                          className="flex items-center justify-between w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 rounded-lg transition-colors text-left"
+                        >
+                          <div>
+                            <p className="text-sm font-medium text-slate-200">{label}</p>
+                            <p className="text-xs text-slate-400">{desc}</p>
+                          </div>
+                          {loadingSample === id ? (
+                            <svg className="animate-spin h-5 w-5 text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                          ) : (
+                            <span className="text-xs text-primary-400 font-medium">Load →</span>
+                          )}
+                        </button>
+                      ))}
                     </div>
-                  )}
-                  {canUpload && (
-                    <>
-                      {tenantSample && (
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 border-t border-slate-700"></div>
-                          <span className="text-xs text-slate-500">or</span>
-                          <div className="flex-1 border-t border-slate-700"></div>
-                        </div>
-                      )}
-                      <Button
-                        onClick={() => setIsUploadModalOpen(true)}
-                        variant="secondary"
-                        className="w-full"
-                      >
-                        Upload Your Own Files
-                      </Button>
-                    </>
-                  )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 border-t border-slate-700"></div>
+                    <span className="text-xs text-slate-500">or</span>
+                    <div className="flex-1 border-t border-slate-700"></div>
+                  </div>
+                  <Button
+                    onClick={() => setIsUploadModalOpen(true)}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    Upload Your Own Files
+                  </Button>
                 </div>
               </div>
             )}
