@@ -57,20 +57,21 @@ export const AdminStepper: FC<AdminStepperProps> = ({ steps, onStepClick }) => {
               <div className="flex flex-col items-center justify-start min-w-0">
                 <button
                   type="button"
-                  className="flex flex-col items-center justify-start focus:outline-none w-full"
+                  className={`flex flex-col items-center justify-start focus:outline-none w-full group ${isClickable ? 'cursor-pointer' : 'cursor-default'}`}
                   disabled={!isClickable}
                   onClick={isClickable ? () => onStepClick?.(index) : undefined}
                   tabIndex={isClickable ? 0 : -1}
                   style={{ background: 'none', padding: 0 }}
+                  title={isClickable ? `Jump to step ${index + 1}: ${step.label}` : undefined}
                 >
                   <div
-                    className={circleClasses}
+                    className={`${circleClasses} ${isClickable ? 'group-hover:scale-110 group-hover:ring-2 group-hover:ring-primary-400/40' : ''}`}
                     style={{ lineHeight: '2.25rem' }}
                   >
                     {index + 1}
                   </div>
                   <div className="mt-2 w-full flex justify-center">
-                    <div className="text-sm font-medium text-slate-100 text-center leading-tight break-words whitespace-normal">
+                    <div className={`text-sm font-medium text-center leading-tight break-words whitespace-normal ${isClickable ? 'text-slate-100 group-hover:text-primary-300' : 'text-slate-100'}`}>
                       {step.label}
                     </div>
                   </div>

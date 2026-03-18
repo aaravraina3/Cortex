@@ -23,18 +23,29 @@ class PreprocessingQueue:
             self._worker_task = asyncio.create_task(self._worker())
 
     async def _worker(self):
-        """Process items sequentially"""
-
+        """Process items sequentially with rate-limit retry."""
         while True:
             extracted_file_id = await self._queue.get()
-            try:
-                print(f"Processing {extracted_file_id}", flush=True)
-                await self.service.process_pdf_upload(extracted_file_id)
-                print(f"Completed {extracted_file_id}", flush=True)
-            except Exception as e:
-                print(f"Failed {extracted_file_id}: {e}", flush=True)
-            finally:
-                self._queue.task_done()
+            retries = 0
+            max_retries = 3
+            while retries <= max_retries:
+                try:
+                    print(f"Processing {extracted_file_id}", flush=True)
+                    await self.service.process_pdf_upload(extracted_file_id)
+                    print(f"Completed {extracted_file_id}", flush=True)
+                    break
+                except Exception as e:
+                    err_str = str(e)
+                    if ("429" in err_str or "rate" in err_str.lower() or "quota" in err_str.lower()) and retries < max_retries:
+                        retries += 1
+                        wait = 20 * retries
+                        print(f"Rate limited on {extracted_file_id}, retry {retries}/{max_retries} in {wait}s", flush=True)
+                        await asyncio.sleep(wait)
+                    else:
+                        print(f"Failed {extracted_file_id}: {e}", flush=True)
+                        break
+            self._queue.task_done()
+            await asyncio.sleep(2)
 
     async def enqueue(self, file_upload_id: UUID) -> UUID:
         """Add to queue"""

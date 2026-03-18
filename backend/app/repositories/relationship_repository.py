@@ -41,7 +41,6 @@ class RelationshipRepository:
                     "type": new_relationship.type,
                 }
             )
-            .select("id")
             .execute()
         )
         return insert_response.data[0]["id"]

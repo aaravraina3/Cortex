@@ -125,14 +125,15 @@ async def execute_migrations(
 async def load_data_for_tenant(
     tenant_id: UUID,
     data_sync_service: DataSyncService = Depends(get_data_sync_service),
+    migration_service: MigrationService = Depends(get_migration_service),
     admin=Depends(get_current_admin),
 ) -> dict:
     """
-    Full data sync for a tenant:
-    - Fetch extracted files
-    - Update tables
+    Full data sync for a tenant.
+    Auto-executes pending migrations first so tables exist.
     """
     try:
+        await migration_service.execute_migrations(tenant_id)
         return await data_sync_service.sync_tenant(tenant_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

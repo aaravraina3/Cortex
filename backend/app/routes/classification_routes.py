@@ -1,3 +1,4 @@
+import asyncio
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -83,13 +84,6 @@ async def create_classifications(
             Classification
         ] = await classification_service.get_classifications(tenant_id)
 
-        print(initial_classifications)
-
-        if initial_classifications is None:
-            raise HTTPException(
-                status_code=404, detail="Unable to get initial classifications"
-            )
-
         classification_names: list[str] = await create_classifications_helper(
             extracted_files,
             [classification.name for classification in initial_classifications],
@@ -151,8 +145,6 @@ async def classify_files(
             raise HTTPException(
                 status_code=404, detail="Failed to classify extracted files"
             )
-
-        import asyncio
 
         # Batch update classification_id in database
         update_tasks = []

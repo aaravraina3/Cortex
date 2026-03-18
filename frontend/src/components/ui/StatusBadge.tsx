@@ -31,9 +31,16 @@ export function StatusBadge({ status, label }: StatusBadgeProps) {
     success: 'Success',
   }
 
+  const tooltips: Record<string, string> = {
+    queued: 'Waiting in queue — files process one at a time',
+    processing: 'Extracting data and generating embeddings...',
+    failed: 'Extraction failed — click Retry to try again',
+  }
+
   return (
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${styles[status]}`}
+      title={tooltips[status]}
     >
       {label || defaultLabels[status]}
     </span>

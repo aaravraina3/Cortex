@@ -27,7 +27,7 @@ class ExtractedFile(BaseModel):
     name: str
     tenant_id: UUID
     extracted_file_id: UUID
-    extracted_data: dict[str, Any]
+    extracted_data: dict[str, Any] | list[Any]
     embedding: list[float]
     classification: Classification | None = None
 

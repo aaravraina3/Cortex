@@ -24,8 +24,7 @@ async def lifespan(app: FastAPI):
 
     await init_queue(supabase)
 
-    if os.getenv("ENVIRONMENT") == "development":
-        await seed_database(supabase)
+    await seed_database(supabase)
 
     yield
     # Shutdown (if needed)
