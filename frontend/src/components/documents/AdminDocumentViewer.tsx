@@ -61,6 +61,14 @@ export function AdminDocumentViewer({
 
           <div className="flex items-center space-x-2">
             <Button
+              onClick={() => signedUrl && window.open(signedUrl, '_blank')}
+              variant="secondary"
+              size="sm"
+              disabled={!signedUrl}
+            >
+              Open in new tab
+            </Button>
+            <Button
               onClick={handleRetryExtract}
               variant="secondary"
               size="sm"
@@ -94,8 +102,9 @@ export function AdminDocumentViewer({
           {/* Left: PDF */}
           <div className="w-1/2 border-r border-slate-700">
             {signedUrlIsLoading ? (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-slate-400">Loading PDF...</div>
+              <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-400">
+                <div className="animate-spin h-8 w-8 border-2 border-slate-500 border-t-slate-300 rounded-full" />
+                <p>Loading PDF… Large files may take a moment</p>
               </div>
             ) : signedUrl ? (
               <PDFDisplay pdfUrl={signedUrl} />
