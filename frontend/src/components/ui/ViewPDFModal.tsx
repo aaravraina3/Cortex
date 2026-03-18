@@ -104,18 +104,30 @@ export function ViewPDFModal({ file, onClose }: ViewPDFModalProps) {
           </div>
         </div>
 
-        {/* PDF Content */}
+        {/* Content */}
         <div className="flex-1 overflow-hidden">
           {signedUrlIsLoading ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-400">
               <div className="animate-spin h-8 w-8 border-2 border-slate-500 border-t-slate-300 rounded-full" />
-              <p>Loading PDF… Large files may take a moment</p>
+              <p>Loading document…</p>
             </div>
           ) : signedUrl ? (
-            <PDFDisplay pdfUrl={signedUrl} />
+            file.type === 'pdf' ? (
+              <PDFDisplay pdfUrl={signedUrl} />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-400">
+                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p className="text-lg">CSV files cannot be previewed</p>
+                <Button onClick={downloadPDF} variant="primary" size="sm">
+                  Download {file.name}
+                </Button>
+              </div>
+            )
           ) : (
             <div className="flex items-center justify-center h-full">
-              <div className="text-red-400">Failed to load PDF</div>
+              <div className="text-red-400">Failed to load document</div>
             </div>
           )}
         </div>
