@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from supabase._async.client import AsyncClient
 
 from app.core.dependencies import get_current_user
@@ -34,6 +34,7 @@ async def list_datasets():
 @router.post("/load/{dataset_name}")
 async def load_sample_dataset(
     dataset_name: str,
+    tenant_id: UUID | None = Query(None, description="Tenant to load samples into (required for admin)"),
     user=Depends(get_current_user),
     supabase: AsyncClient = Depends(get_async_supabase),
 ):
@@ -42,18 +43,17 @@ async def load_sample_dataset(
 
     dataset_path = SAMPLES_DIR / dataset_name
     if not dataset_path.exists():
-        raise HTTPException(status_code=404, detail=f"Dataset directory not found")
+        raise HTTPException(status_code=404, detail="Dataset directory not found")
 
-    tenant_id = user["user_metadata"].get("tenant_id")
     role = user["user_metadata"].get("role")
 
     if role == "admin":
-        tenant_id = user["user_metadata"].get("tenant_id")
-        if not tenant_id:
-            raise HTTPException(status_code=400, detail="Admin must select a tenant first")
+        effective_tenant_id = str(tenant_id) if tenant_id else None
+    else:
+        effective_tenant_id = user["user_metadata"].get("tenant_id")
 
-    if not tenant_id:
-        raise HTTPException(status_code=400, detail="No tenant_id found")
+    if not effective_tenant_id:
+        raise HTTPException(status_code=400, detail="No tenant_id — admin must pass ?tenant_id=")
 
     uploaded = []
     skipped = []
@@ -62,7 +62,7 @@ async def load_sample_dataset(
         if not file_path.is_file() or file_path.name.startswith("."):
             continue
 
-        storage_path = f"{tenant_id}/{file_path.name}"
+        storage_path = f"{effective_tenant_id}/{file_path.name}"
 
         try:
             file_bytes = file_path.read_bytes()

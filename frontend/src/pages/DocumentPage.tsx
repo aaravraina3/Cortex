@@ -17,7 +17,7 @@ import { useRetryExtract } from '../hooks/preprocess.hooks'
 import api from '../config/axios.config'
 
 export function DocumentPage() {
-  const { user } = useAuth()
+  const { user, currentTenant } = useAuth()
   const { files, filesIsLoading } = useGetAllFiles()
   const { extractedFiles } = useGetAllExtractedFiles()
   const { uploadFile, deleteFile, isUploadingFile, isDeletingFile } =
@@ -40,7 +40,8 @@ export function DocumentPage() {
   const handleLoadSample = async (dataset: string) => {
     setLoadingSample(dataset)
     try {
-      await api.post(`/samples/load/${dataset}`)
+      const params = currentTenant ? `?tenant_id=${currentTenant.id}` : ''
+      await api.post(`/samples/load/${dataset}${params}`)
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.files.all() })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.extractedFiles.all() })
     } catch (err) {
@@ -151,6 +152,19 @@ export function DocumentPage() {
   const handleCloseModal = () => {
     setViewingFile(null)
     setFileParam(null)
+  }
+
+  if (isAdmin && !currentTenant) {
+    return (
+      <Layout>
+        <div className="flex h-full items-center justify-center">
+          <div className="text-center space-y-3">
+            <h2 className="text-xl font-semibold text-slate-200">Select a Tenant</h2>
+            <p className="text-slate-400">Use the "Switch Tenant" dropdown in the top right to select a tenant first.</p>
+          </div>
+        </div>
+      </Layout>
+    )
   }
 
   return (

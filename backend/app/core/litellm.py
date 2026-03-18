@@ -16,8 +16,7 @@ class ModelType(Enum):
 class EmbeddingModelType(Enum):
     """Available embedding models."""
 
-    # Gemini models (768 default, supports up to 3072)
-    GEMINI_TEXT_EMBEDDING = "gemini/text-embedding-004"
+    GEMINI_TEXT_EMBEDDING = "gemini/text-embedding-005"
 
     # OpenAI models
     OPENAI_SMALL = "text-embedding-3-small"  # 1536 dimensions
@@ -77,9 +76,8 @@ class LLMClient:
         # Ensure input is a list
         inputs = [input_text] if isinstance(input_text, str) else input_text
 
-        # Generate embeddings with fixed dimensions
         response: EmbeddingResponse = await aembedding(
-            model=embed_model, input=inputs, dimensions=768
+            model=embed_model, input=inputs
         )
 
         # Extract embeddings
