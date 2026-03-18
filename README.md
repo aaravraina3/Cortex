@@ -57,6 +57,16 @@ This single command generates environment variables, starts the local Supabase s
 | eng@staubli.com           | password | Tenant |
 | eng@milara.com            | password | Tenant |
 
+## Sample Data
+
+The `samples/` directory contains test documents for running the full pipeline:
+
+- **`mock-data/`** — Purchase orders, RFQs, product specs, and CSVs with cross-references (best for testing FK resolution)
+- **`kuka/`** — KUKA industrial robot brochures and welding system specs
+- **`milara/`** — Milara semiconductor handling robot spec sheets
+
+Upload these through the frontend after logging in as a tenant user. See [`samples/README.md`](samples/README.md) for details.
+
 ## Commands
 
 ```bash
